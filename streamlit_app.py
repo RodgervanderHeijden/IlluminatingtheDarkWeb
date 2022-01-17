@@ -15,13 +15,13 @@ st.title('Shining a Light on the Dark Web')
 # LOAD THE DATA
 @st.cache(allow_output_mutation=True)
 def get_all_data():
-    drugs = pd.read_csv(r'Product_dataset_new.csv')
+    drugs = pd.read_csv(r'data/Product_dataset_new.csv')
     drugs.drop(drugs.columns[0], axis=1, inplace=True)
     # The price in $s is captured as a string, containing both decimal points and commas. Here we clean that to a float
     drugs['price'] = [round(float(x)) if len(x) <= 6 else float(x[:-3].replace(",", "")) for x in drugs['price in $']]
     # to do: add country of origin to the vendor dataset. Can be extracted from drugs dataset.
     # vendor can have multiple shipping from locations --> unable to trace exact country of origin
-    vendors = pd.read_csv(r'Vendor_dataset_new.csv')
+    vendors = pd.read_csv(r'data/Vendor_dataset_new.csv')
     vendors.drop(vendors.columns[0], axis=1, inplace=True)
     # rename misspelled column
     vendors.rename(columns={'verifcation': 'verification'}, inplace=True)
@@ -114,19 +114,6 @@ if chapter == "0. Preface":
 
 # CHAPTER 1
 if chapter == "1. Data Description":
-    st.header("Architecture overview")
-    st.write("""To obtain data of the ToRReZ market we had to visit the dark web. To achieve this, the following 
-                environment is implemented. First, a virtual machine is downloaded to create a safe place to 
-                experiment in. Then, to add another layer of protection, we connected to a VPN within the virtual machine. 
-                Finally, we downloaded the Tor browser which allowed us to visit the dark web 
-                and ToRReZ. The image below clearly indicates the architecture used. 
-             """)
-    col_left, col_right = st.beta_columns((3, 1))
-    with col_left, col_right:
-        # show image architecture
-        image = Image.open(r'Architecture.png')
-        col_left.image(image)
-
     st.write("___")
     st.header("Data collection")
     st.write("""
@@ -148,25 +135,6 @@ if chapter == "1. Data Description":
              ‘Drugs and Chemicals’. More specific information can be found in the code, where comments are also 
              provided for better understanding the workflow. 
              """)
-
-    st.write("___")
-    st.header("Data description")
-    st.write("""
-    Crawling and scraping eventually led to a dataset that can be used for analysis. 
-    We ended up with two different datasets, one that contains the product information and one that contains 
-    the vendor information. We wanted specific insights on the ToRReZ market and hence only this market is scraped. 
-    The type of data scraped is textual data. Images were not scraped as they were not useful for the analysis we intended to do. 
-    Below you can find the data description; the variable name, the data type and the explanation.
-    """)
-
-    # load the tables containing the data descriptions
-    data_description_product = pd.read_excel(r'Data description.xlsx', sheet_name='Blad1')
-    data_description_vendor = pd.read_excel(r'Data description.xlsx', sheet_name='Blad2')
-
-    st.subheader("Product data")
-    st.table(data_description_product)
-    st.subheader("Vendor data")
-    st.table(data_description_vendor)
 
     st.write("___")
     st.header("Raw data")
