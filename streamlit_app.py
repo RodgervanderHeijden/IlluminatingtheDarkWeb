@@ -8,27 +8,26 @@ import altair as alt
 from PIL import Image
 
 # BASE SETUP
-st.set_page_config(page_title='Group 17: Data Forensics Dashboard', page_icon=None, layout='wide', initial_sidebar_state='expanded')
+st.set_page_config(page_title='Rodger van der Heijden: looking into the dark web', page_icon=None, layout='wide', initial_sidebar_state='expanded')
 st.title('Shining a Light on the Dark Web')
 
 
 # LOAD THE DATA
 @st.cache(allow_output_mutation=True)
-def get_all_data():
-    drugs = pd.read_csv(r'data/Product_dataset_new.csv')
+def get_all_data(dataset):
+    print(dataset)
+    drugs = pd.read_csv(r'./data/' + dataset)
     drugs.drop(drugs.columns[0], axis=1, inplace=True)
     # The price in $s is captured as a string, containing both decimal points and commas. Here we clean that to a float
-    drugs['price'] = [round(float(x)) if len(x) <= 6 else float(x[:-3].replace(",", "")) for x in drugs['price in $']]
+    # drugs['price'] = [round(float(x)) if len(x) <= 6 else float(x[:-3].replace(",", "")) for x in drugs['price in $']]
     # to do: add country of origin to the vendor dataset. Can be extracted from drugs dataset.
     # vendor can have multiple shipping from locations --> unable to trace exact country of origin
-    vendors = pd.read_csv(r'data/Vendor_dataset_new.csv')
+    vendors = pd.read_csv(r'data/raw/vendor_20210517.csv')
     vendors.drop(vendors.columns[0], axis=1, inplace=True)
     # rename misspelled column
     vendors.rename(columns={'verifcation': 'verification'}, inplace=True)
     return drugs, vendors
 
-
-df_drugs, df_vendors = get_all_data()
 
 
 # Given the countries the user inputs in the sidebar, select the relevant data.
@@ -64,6 +63,24 @@ with st.sidebar:
                                         "3. Vendor Insights",
                                         "4. Advanced Insights",),
                        index=4)
+
+    dataset = st.selectbox('Select the dataset you want to see.',
+                             options=['product_20210517.csv', 'product_20220117.csv'],)
+
+df_drugs, df_vendors = get_all_data(dataset)
+
+
+# new data
+drugs_2 = pd.read_csv(r'data/raw/product_20220117.csv')
+# drugs_2.drop(drugs_2.columns[0], axis=1, inplace=True)
+# The price in $s is captured as a string, containing both decimal points and commas. Here we clean that to a float
+
+drugs_2['price'] = round(drugs_2['price in $'])
+# to do: add country of origin to the vendor dataset. Can be extracted from drugs dataset.
+# vendor can have multiple shipping from locations --> unable to trace exact country of origin
+st.write(drugs_2)
+
+
 
 # CHAPTER 0
 if chapter == "0. Preface":
@@ -1467,13 +1484,13 @@ elif chapter == '4. Advanced Insights':
     df_verification['feedback_positive_percentage'] = df_verification['feedback_positive_percentage'].astype("float")
     df_verification = df_verification[df_verification['feedback_total'] != 0]
 
-    fig = px.scatter(df_verification, x='feedback_positive_percentage',
-                     y="transactions_month", title='Sales per month vs feedback', color='verification',
-                     hover_data=["feedback_total"],
-                     labels={"transactions_month": "sales per month",
-                             "feedback_positive_percentage": "percentage of positive feedback"},
-                     category_orders={'verification':verification_order})
-    st.plotly_chart(fig, use_container_width=True)
+    # fig = px.scatter(df_verification, x='feedback_positive_percentage',
+    #                  y="transactions_month", title='Sales per month vs feedback', color='verification',
+    #                  hover_data=["feedback_total"],
+    #                  labels={"transactions_month": "sales per month",
+    #                          "feedback_positive_percentage": "percentage of positive feedback"},
+    #                  category_orders={'verification':verification_order})
+    # st.plotly_chart(fig, use_container_width=True)
 
     st.write(
         "The great majority of the data is scattered densely between 80 and 100% positive feedback. It looks like there is some "
