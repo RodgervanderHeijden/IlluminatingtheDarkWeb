@@ -33,3 +33,5 @@ https://justhackerthings.com/post/using-tor-from-the-command-line/
 https://justhackerthings.com/post/building-a-dark-web-scraper/
 https://www.linkedin.com/pulse/scraping-onion-websites-from-darknet-using-tor-python-stephan-fleig/
 
+
+https://github.com/seatgeek/thefuzz
